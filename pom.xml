@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hortonworks</groupId>
-    <artifactId>iot-masterclass</artifactId>
+    <artifactId>ioat-masterclass</artifactId>
     <version>2.3.0.0-2557</version>
     <modules>
         <module>common-sources</module>
@@ -14,8 +14,26 @@
     </modules>
     <packaging>pom</packaging>
 
-    <name>iot-masterclass</name>
+    <name>ioat-masterclass</name>
+    <description>Tutorial on building Big Data IoT Apps</description>
     <url>http://wwww.hortonworks.com</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Dhruv Kumar</name>
+            <email>dkumar@hortonworks.com</email>
+            <organization>Hortonworks</organization>
+            <organizationUrl>http://www.hortonworks.com/</organizationUrl>
+        </developer>
+    </developers>
 
     <repositories>
         <repository>
@@ -188,12 +206,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-idea-plugin</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -206,6 +218,16 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.10</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-idea-plugin</artifactId>
+                <version>2.2.1</version>
             </plugin>
         </plugins>
     </build>
