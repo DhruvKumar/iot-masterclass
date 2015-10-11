@@ -1,22 +1,20 @@
-# Internet of Any Thing Masterclass
+# Internet of Things Masterclass
 
 ## Introduction 
 
-Welcome to the IoAT Masterclass. Using the labs in this repository, you'll learn how to build a real time event 
+Welcome to the Internet of (any)-Things Masterclass. Using the labs in this repository, you'll learn how to build a 
+real time event 
 processing application on the Hortonworks Data Platform (HDP) with tools like Spark, Storm, Kafka, Akka, Hbase, and 
 Hive. 
 There are multiple parts to this master class which build on each other.
 By following the parts in sequence, you'll construct an app which does the following in local mode:
 
-|Part|Goals|Tools|
+|Part  |Goals|Tools|
 | ---- | --- | --- |
-| 1 | Set up dev. environment, start Zookeeper and Kafka in local mode. Simulate event generation using Akka, push to 
-a Kafka producer. | Kafka, Zookeeper, Akka | 
-| 2 | Start Storm in local mode, connect Kafka to Storm. Execute simple storm topology with a Kafka event spout | 
-Kafka, Storm | 
+| 1 | Set up dev. environment, start Zookeeper and Kafka in local mode. Simulate event generation using Akka, push to a Kafka producer. | Kafka, Zookeeper, Akka | 
+| 2 | Start Storm in local mode, connect Kafka to Storm. Execute simple storm topology with a Kafka event spout | Kafka, Storm | 
 | 3 | Write a Storm Bolt to track event characteristics and raise alerts according to some policy | Storm |
-| 4 | Write a Storm Bolt to apply a Spark ML model to each event and predict future alerts | Spark, 
-Storm, JPMML |
+| 4 | Write a Storm Bolt to apply a Spark ML model to each event and predict future alerts | Spark, Storm, JPMML |
 
 At the end of part 4, you should have a very good understanding of how to construct a production IoAT app using HDP, 
 similar to the one showed in Hadoop Summit 2015:

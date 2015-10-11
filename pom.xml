@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hortonworks</groupId>
-    <artifactId>ioat-masterclass</artifactId>
+    <artifactId>iot-masterclass</artifactId>
     <version>2.3.0.0-2557</version>
     <modules>
         <module>common-sources</module>
@@ -14,7 +14,7 @@
     </modules>
     <packaging>pom</packaging>
 
-    <name>ioat-masterclass</name>
+    <name>iot-masterclass</name>
     <description>Tutorial on building Big Data IoT Apps</description>
     <url>http://wwww.hortonworks.com</url>
 
