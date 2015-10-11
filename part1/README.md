@@ -118,7 +118,7 @@ $ mvn eclipse:eclipse
 
 Here's how the master class looks like in my IntelliJ after importing:
 
-![Project Structure in IDE](/images/part1/projectSetup.png)
+![Project Structure in IDE](../images/part1/projectSetup.png)
 
 For more details, see IDEA [plugin](https://maven.apache.org/plugins/maven-idea-plugin/) and Eclipse [plugin](https://maven.apache.org/plugins/maven-eclipse-plugin/) 
 documentation.
