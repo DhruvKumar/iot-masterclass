@@ -21,7 +21,7 @@ similar to the one showed in Hadoop Summit 2015:
  
 <div style="text-align:center">
   <a href="http://www.youtube.com/watch?feature=player_embedded&v=FHMMcMYhmNI&t=1h30m2s" target="_blank">
-    <img src="http://img.youtube.com/vi/FHMMcMYhmNI/0.jpg" alt="Hadoop Summit 2015" width="240" height="180" border="10" />
+    <img src="http://img.youtube.com/vi/FHMMcMYhmNI/0.jpg" alt="Hadoop Summit 2015" width="480" height="360" />
   </a>
 </div>
 
