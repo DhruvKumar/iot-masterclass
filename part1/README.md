@@ -272,8 +272,26 @@ You need to do two things in order to finish the labs in this part:
  
      //  2. create SensorEventsGenerator object, call generateTruckEventsStream() with sensorEeventsParam object
  ```
- * **Task 2:** Implement the [KafkaSensorEventCollector.onReceive()]
- (src/main/java/com/hortonworks/lab/KafkaSensorEventCollector.java) method:
+ * **Task 2:**  The [KafkaSensorEventCollector](src/main/java/com/hortonworks/lab/KafkaSensorEventCollector.java) 
+ is the actor receiving the events, and it will also push them out using a Kafka Producer. We have already created a 
+ Kafka producer in its constructor :
+ 
+ ```java
+ public KafkaSensorEventCollector() {
+     kafkaProperties.put("metadata.broker.list", "localhost:20111");
+     kafkaProperties.put("serializer.class", "kafka.serializer.StringEncoder");
+     //kafkaProperties.put("request.required.acks", "1");
+     try {
+       ProducerConfig producerConfig = new ProducerConfig(kafkaProperties);
+       kafkaProducer = new Producer<String, String>(producerConfig);
+     } catch (Exception e) {
+       logger.error("Error creating producer", e);
+     }
+ ```
+ 
+ Your task is to implement its [onReceive()](src/main/java/com/hortonworks/lab/KafkaSensorEventCollector.java) method to 
+ receive the `MobileEyeEvent` and send it to Kafka Producer with the "truck_events" as the topic:
+ 
  ```java
  @Override
    public void onReceive(Object event) throws Exception {
