@@ -1,24 +1,14 @@
 package com.hortonworks.solution;
 
-import backtype.storm.Config;
-import backtype.storm.generated.StormTopology;
-import backtype.storm.spout.SchemeAsMultiScheme;
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.tuple.Fields;
+
 import com.github.sakserv.minicluster.config.ConfigVars;
 import com.github.sakserv.minicluster.impl.KafkaLocalBroker;
-import com.github.sakserv.minicluster.impl.StormLocalCluster;
 import com.github.sakserv.minicluster.impl.ZookeeperLocalCluster;
 import com.hortonworks.labutils.PropertyParser;
 import com.hortonworks.labutils.SensorEventsGenerator;
 import com.hortonworks.labutils.SensorEventsParam;
-import com.hortonworks.stormprocessors.kafka.TruckScheme2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import storm.kafka.BrokerHosts;
-import storm.kafka.KafkaSpout;
-import storm.kafka.SpoutConfig;
-import storm.kafka.ZkHosts;
 import sun.misc.Launcher;
 
 import java.io.IOException;

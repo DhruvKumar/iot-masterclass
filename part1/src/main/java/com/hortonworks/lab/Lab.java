@@ -4,6 +4,8 @@ import com.github.sakserv.minicluster.config.ConfigVars;
 import com.github.sakserv.minicluster.impl.KafkaLocalBroker;
 import com.github.sakserv.minicluster.impl.ZookeeperLocalCluster;
 import com.hortonworks.labutils.PropertyParser;
+import com.hortonworks.labutils.SensorEventsGenerator;
+import com.hortonworks.labutils.SensorEventsParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.misc.Launcher;
