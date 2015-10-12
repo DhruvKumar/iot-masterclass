@@ -172,6 +172,7 @@ you under the `common-sources` folder. Let's study those classes to understand h
  .domain.transport.Truck`.
  * The `Truck` actor generates events of the type `MobileEyeEvent` and sends them as a message to a receiving Actor 
  located at `akka://EventSimulator/user/eventCollector`:
+ 
  ```java
  @Override
  public void onReceive(Object message) throws Exception {
@@ -196,6 +197,7 @@ you under the `common-sources` folder. Let's study those classes to understand h
  ```
  * The `Truck` actors are started in a round robin manner by a message from the `com.hortonworks.simulator.masters
  .SimulationMaster` Actor:
+ 
  ```java
  public SimulationMaster(int numberOfEventEmitters, Class eventEmitterClass,
  			ActorRef listener, int numberOfEvents, long demoId, int messageDelay) {
@@ -229,6 +231,7 @@ you under the `common-sources` folder. Let's study those classes to understand h
  	```
  * The `SimulationMaster` is started by the `com.hortonworks.labutils.SensorEventsGenerator` class by sending it a 
  `StartSimulation` message:
+ 
  ```java
  final Props props = Props.create(SimulationMaster.class, numberOfEmitters, eventEmitterClass, listener, 
                                   params.getNumberOfEvents(), demoId, params.getDelayBetweenEvents());
