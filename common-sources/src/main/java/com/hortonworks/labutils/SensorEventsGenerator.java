@@ -21,7 +21,7 @@ public class SensorEventsGenerator {
       final Class eventCollectorClass = Class.forName(params.getEventCollectorClassName());
       Config config = ConfigFactory.load();
       TruckConfiguration.initialize(params.getRouteDirectory());
-      int emitters = TruckConfiguration.freeRoutePool.size();
+      int emitters = TruckConfiguration.freeRoutePool.size(); // 25
 
       Thread.sleep(5000);
       System.out.println("Number of Emitters is ....." + emitters);

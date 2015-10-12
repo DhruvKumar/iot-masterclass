@@ -164,15 +164,88 @@ First, we set up and start local mode Zookeeper and Kafka Clusters:
 ```
 
 Now we need to create an Akka actor for generating events. Most of the event simulation machinery is already given to
-you under the `common-sources` folder. Study those classes to understand how events can be simulated. 
+you under the `common-sources` folder. Let's study those classes to understand how events can be simulated.
+ 
+ * We will generate events of the type `com.hortonworks.simulator.impl.domain.transport.MobileEyeEvent`. 
+ * There are 25 routes in our trucking fleet, represented by the kml files present in each lab's resources folder.
+ * For each of these routes, we will instantiate an event emitter Actor of type `com.hortonworks.simulator.impl
+ .domain.transport.Truck`.
+ * The `Truck` actor generates events of the type `MobileEyeEvent` and sends them as a message to a receiving Actor 
+ located at `akka://EventSimulator/user/eventCollector`:
+ ```java
+ @Override
+ public void onReceive(Object message) throws Exception {
+  ...
+    ActorRef **actor** = this.context().system().actorFor("**akka://EventSimulator/user/eventCollector**");
+    while (messageCount < numberOfEventsToGenerate) {
+      double offset_factor = rand.nextDouble() * 0.25;
+      timeline += messageDelay - (offset_factor * messageDelay);
+      messageCount++;
+      context().system().scheduler().scheduleOnce(scala.concurrent.duration.Duration.create(timeline, TimeUnit.MILLISECONDS),
+                 **actor**, **generateEvent()**, this.context().system().dispatcher(), this.getSender());
+  ...  
+  ...
+ }
+ 
+ public MobileEyeEvent generateEvent() {
+    ...
+       return new **MobileEyeEvent(demoId, nextLocation, getRandomUnsafeEvent(),
+           this)**;
+    ...  
+   }
+ ```
 
 ### Lab Tasks
 You need to do two things in order to finish the labs in this part:
  
- * **Task 1:** Using `com.hortonworks.labutils.SensorEventsGenerator`, generate events. Fill out the missing code 
- block in the Lab class. 
- * **Task 2:** Implement the  `KafkaSensorEventCollector.onReceive()` method of the `com.hortonworks.lab
- .KafkaSensorEventsCollector` class.
+ * **Task 1:** Use [com.hortonworks.labutils.SensorEventsGenerator]
+ (../common-sources/src/main/java/com/hortonworks/labutils/SensorEventGenerator.java) 
+ to start simulation master. Fill out the missing code block in the 
+ [part1.com.hortonworks.lab.Lab](src/main/java/com/hortonworks/lab/Lab.java) class:
+ ```java
+     // Lab: Generate sensor truck events
+     //  1. create SensorEventsParam object and set:
+     //  event emitter = com.hortonworks.simulator.impl.domain.transport.Truck
+     //  event collector = com.hortonworks.lab.KafkaSensorEventCollector
+     //  number of events = 200
+     //  inter-event delay = 1000
+     //  route directory = routes/midwest (this is in resources folder)
+     //  truck symbol size = 10000
+ 
+     //  2. create SensorEventsGenerator object, call generateTruckEventsStream() with sensorEeventsParam object
+ ```
+ * **Task 2:** Implement the [KafkaSensorEventCollector.onReceive()]
+ (src/main/java/com/hortonworks/lab/KafkaSensorEventCollector.java) method:
+ ```java
+ @Override
+   public void onReceive(Object event) throws Exception {
+ 
+     // Lab: Send the event to kafkaProducer and log the message
+ 
+     //  1. cast event to MobileEyeEvent
+     MobileEyeEvent mee = (MobileEyeEvent) event;
+ 
+     //  2. get eventToPass from MobileEyeEvent created above
+     String eventToPass = mee.toString();
+ 
+     //  3. similarly get driverID from MobileEyeEvent
+     String driverId = ""; // implement me
+ 
+     logger.debug("Creating event[" + eventToPass + "] for driver[" + driverId + "] in truck [" + mee.getTruck() + "]");
+ 
+     // 4. create KeyedMessage with topic as "truck_events", key as driverId, value as eventToPass
+     KeyedMessage<String, String> msg = null; // implement me
+ 
+     try {
+ 
+     // 5. send msg using KafkaProducer (make sure you've implemented step 4 above to avoid NPE)
+       kafkaProducer.send(msg);
+     } catch (Exception e) {
+       logger.error("Error sending event[" + eventToPass + "] to Kafka queue (" +
+           kafkaProperties.get("metadata.broker.list") + ")", e);
+     }
+   }
+ ```
  
  Once implemented, you can just run `com.hortonworks.lab.Lab.main()` method from the IDE to see the output. 
  

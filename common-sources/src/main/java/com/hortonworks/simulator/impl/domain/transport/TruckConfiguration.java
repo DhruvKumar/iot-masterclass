@@ -58,7 +58,7 @@ public class TruckConfiguration {
 	private static void parseRoutes(String routeDirectoryLocation) {
 		List<Route> truckRoutes = new TruckRoutesParser()
 				.parseAllRoutes(routeDirectoryLocation);
-		LOGGER.info(truckRoutes.size() + " truck Routes were paresed");
+		LOGGER.info(truckRoutes.size() + " truck Routes were parsed");
 		freeRoutePool.addAll(truckRoutes);
 	}
 
