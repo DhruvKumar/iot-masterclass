@@ -1,30 +1,85 @@
-# Part 1: Set up development environment, generate events and push to Kafka.
+# Part 2: Connect Kafka to Storm. Execute simple storm topology with a Kafka event spout.
+
+In this part we will take the events received by `KafkaSensorEventsCollector` and push them into a Kafka Spout. This 
+lab will show you how to connect Kafka with Storm. We will also deploy a simple storm topology on the cluster 
+containing just the Kafka Spout.
+
+## Understanding Storm Schemes
+
+Storm uses the Tuple model for processing data. Each event passing in Storm is a Tuple of specific fields. The fields
+ and names make up a Scheme object. We will use the `com.hortonworks.stormprocessors.kafka.TruckScheme2` class to 
+ wrap each Kafka producer message into a scheme which Storm can use to deserialize. Here's the code in the 
+ `TruckScheme2` class which does that:
+  
+  ```java
+  @Override
+    public List<Object> deserialize(byte[] bytes) {
+      try {
+        String truckEvent = new String(bytes, "UTF-8");
+        String[] pieces = truckEvent.split("\\|");
+  
+        Timestamp eventTime = Timestamp.valueOf(pieces[0]);
+        int truckId = Integer.valueOf(pieces[1]);
+        int driverId = Integer.valueOf(pieces[2]);
+        String driverName = pieces[3];
+        int routeId = Integer.valueOf(pieces[4]);
+        String routeName = pieces[5];
+        String eventType = pieces[6];
+        double latitude = Double.valueOf(pieces[7]);
+        double longitude = Double.valueOf(pieces[8]);
+        long correlationId = Long.valueOf(pieces[9]);
+        String eventKey = consructKey(driverId, truckId, eventTime);
+  
+        LOG.debug("Creating a Truck Scheme with driverId[" + driverId + "], driverName[" + driverName + "], routeId[" +
+            routeId + "], routeName[" + routeName + "], truckEvent[" + truckEvent + "], and correlationId[" +
+            correlationId + "]");
+        return new Values(driverId, truckId, eventTime, eventType, longitude, latitude, eventKey, correlationId,
+            driverName, routeId, routeName);
+  
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
+  
+    }
+  ```
+  
+  The names of the fields are declared by getOutputFields() method:
+  
+  ```java
+    @Override
+    public Fields getOutputFields() {
+      return new Fields("driverId", "truckId", "eventTime", "eventType", "longitude", "latitude", "eventKey",
+          "correlationId", "driverName", "routeId", "routeName");
+  
+    }
+  ```
+  
+## Lab
+
+* **Task :** You'll need to fill out the missing code in the `part2.com.hortonworks.lab.Lab` class to wrap the event 
+into a compatible Kafka Spout object:
  
-This master class uses Shane Kumpf's Hadoop Mini Clusters to start Kafka, Storm, etc. in a local mode. I've uploaded 
-a slightly changed version of the mini clusters on my Github repository. You'll need to get that first and install 
-locally before doing anything.
-
-```bash
-$ git clone https://github.com/DhruvKumar/hadoop-mini-clusters.git
-$ cd hadoop-mini-clusters
-$ mvn clean install -DskipTests
-```
-
-This should install `hadoop-mini-clusters-0.0.15-SNAPSHOT.jar` in your local repository. You can check if it's 
-correctly installed on Mac OS X and Linux by checking the local `.m2` folder like this:
-
-```bash
-$ ls -alh ~/.m2/repository/com/github/sakserv/hadoop-mini-clusters/0.0.15-SNAPSHOT/
-total 261776
-drwxr-xr-x  9 dkumar  staff   306B Oct 11 10:24 .
-drwxr-xr-x  8 dkumar  staff   272B Sep 27 11:42 ..
--rw-r--r--  1 dkumar  staff   321B Sep 27 11:42 _remote.repositories
--rw-r--r--  1 dkumar  staff   256K Sep 27 11:42 hadoop-mini-clusters-0.0.15-SNAPSHOT-javadoc.jar
--rw-r--r--  1 dkumar  staff    20M Sep 27 11:42 hadoop-mini-clusters-0.0.15-SNAPSHOT-sources.jar
--rw-r--r--  1 dkumar  staff   108M Sep 27 11:42 hadoop-mini-clusters-0.0.15-SNAPSHOT.jar
--rw-r--r--  1 dkumar  staff    10K Sep 27 11:42 hadoop-mini-clusters-0.0.15-SNAPSHOT.pom
--rw-r--r--  1 dkumar  staff   1.1K Sep 27 11:42 maven-metadata-local.xml
--rw-r--r--  1 dkumar  staff   355B Oct 11 10:24 resolver-status.properties
-```
-
-
+ ```java
+    //1. instantiate SpoutConfig object with topic as "truck_events", zkRoot as "/", and consumerGroupId as "group1"
+     SpoutConfig spoutConfig = null; // implement me
+ 
+     //  2. set scheme as TruckScheme2 on spoutConfig object
+     spoutConfig.scheme = new SchemeAsMultiScheme(new TruckScheme2());
+ 
+     //  3. instantiate KafkaSpout using spoutConfig
+     KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
+ 
+     int spoutCount = 1; // number of kafka spouts
+ 
+     // 4. build basic storm topology with kafkaSpout as the only spout, and no bolts for processing
+     TopologyBuilder builder = new TopologyBuilder();
+     builder.setSpout("kafkaSpout", kafkaSpout, spoutCount);
+     StormTopology topology = builder.createTopology();
+ 
+     // 5. submit to local cluster for execution
+     stormLocalCluster.submitTopology("part2: Truck events to Kafka", stormLocalCluster.getStormConf(), topology);
+  ```
+  
+To verify if your answer is correct, look into the Lab class provided in the solutions directory. This completes part
+ 2. In the next part, we will construct a simple storm bolt to raise alerts.
+ 

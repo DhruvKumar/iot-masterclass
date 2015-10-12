@@ -58,31 +58,7 @@ public class TruckEventRuleBolt implements IRichBolt {
   public void processEvent(int driverId, String driverName, int routeId, int truckId, Timestamp eventTime, String
       event, double longitude, double latitude, long currentCorrelationId, String routeName) {
 
-    if (lastCorrelationId != currentCorrelationId) {
-      lastCorrelationId = currentCorrelationId;
-      driverEvents.clear();
-    }
-
-    if (!driverEvents.containsKey(driverId)) {
-      driverEvents.put(driverId, new LinkedList<String>());
-    }
-
-    if (!event.equals("Normal")) {
-      if (driverEvents.get(driverId).size() < MAX_UNSAFE_EVENTS) {
-        driverEvents.get(driverId).push(eventTime + " " + event);
-        LOG.info("Driver[" + driverId + "] " + driverName + " had an unsafe event. Total unsafe " +
-            "events: " + driverEvents.get(driverId).size());
-      } else {
-        LOG.info("Driver[" + driverId + "] has exceed max events...");
-        LOG.info("UNSAFE DRIVING DETECTED FOR DRIVER ID: " + driverId);
-        StringBuffer events = new StringBuffer();
-        for (String unsafeEvent : driverEvents.get(driverId)) {
-          events.append(unsafeEvent + "\n");
-        }
-        LOG.info("Clearing violations table for Driver[" + driverId + "]");
-        driverEvents.get(driverId).clear();
-      }
-    }
+    // Lab: implement me to raise an alert if the num violations have exceeded MAX_UNSAFE_EVENT value
   }
 
 

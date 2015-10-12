@@ -63,7 +63,7 @@ public class Lab {
         .setZookeeperPort(Long.parseLong(propertyParser.getProperty(ConfigVars.ZOOKEEPER_PORT_KEY)))
         .setEnableDebug(Boolean.parseBoolean(propertyParser.getProperty(ConfigVars.STORM_ENABLE_DEBUG_KEY)))
         .setNumWorkers(Integer.parseInt(propertyParser.getProperty(ConfigVars.STORM_NUM_WORKERS_KEY)))
-        .setEnableDebug(true)
+        .setEnableDebug(false)
         .setStormConfig(new Config())
         .build();
 
@@ -81,10 +81,10 @@ public class Lab {
     SensorEventsParam sensorEventsParam = new SensorEventsParam();
     sensorEventsParam.setEventEmitterClassName("com.hortonworks.simulator.impl.domain.transport.Truck");
     sensorEventsParam.setEventCollectorClassName("com.hortonworks.solution.KafkaSensorEventCollector");
-    sensorEventsParam.setNumberOfEvents(200);
-    sensorEventsParam.setDelayBetweenEvents(1000);
+    sensorEventsParam.setNumberOfEvents(25);
+    sensorEventsParam.setDelayBetweenEvents(2000);
     sensorEventsParam.setRouteDirectory(Launcher.class.getResource("/" + "routes/midwest").getPath());
-    sensorEventsParam.setTruckSymbolSize(10000);
+    //sensorEventsParam.setTruckSymbolSize(10000);
     SensorEventsGenerator sensorEventsGenerator = new SensorEventsGenerator();
     sensorEventsGenerator.generateTruckEventsStream(sensorEventsParam);
 
@@ -103,7 +103,7 @@ public class Lab {
 
 
     StormTopology topology = builder.createTopology();
-    stormLocalCluster.submitTopology("part2: Truck events to Kafka", stormLocalCluster.getStormConf(), topology);
+    stormLocalCluster.submitTopology("part2", stormLocalCluster.getStormConf(), topology);
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override

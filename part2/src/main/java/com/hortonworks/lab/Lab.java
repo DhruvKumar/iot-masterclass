@@ -68,7 +68,7 @@ public class Lab {
         .setZookeeperPort(Long.parseLong(propertyParser.getProperty(ConfigVars.ZOOKEEPER_PORT_KEY)))
         .setEnableDebug(Boolean.parseBoolean(propertyParser.getProperty(ConfigVars.STORM_ENABLE_DEBUG_KEY)))
         .setNumWorkers(Integer.parseInt(propertyParser.getProperty(ConfigVars.STORM_NUM_WORKERS_KEY)))
-        .setEnableDebug(true)
+        .setEnableDebug(false)
         .setStormConfig(new Config())
         .build();
 
@@ -77,6 +77,7 @@ public class Lab {
     try {
       zookeeperLocalCluster.start();
       kafkaLocalBroker.start();
+      stormLocalCluster.start();
     } catch (Exception e) {
       LOG.error("Couldn't start the services: " + e.getMessage());
       e.printStackTrace();
