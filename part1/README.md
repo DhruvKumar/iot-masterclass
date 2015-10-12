@@ -241,12 +241,17 @@ you under the `common-sources` folder. Let's study those classes to understand h
  * Since the events will be received by the Actor sitting at 
  `akka://EventSimulator/user/eventCollector`, the `SensorEventsGenerator` also creates that Actor and places it at 
  the correct hierarchy so that the `Truck` actor's events are routed to it properly:
+ 
  ```java
  ActorSystem system = ActorSystem.create("EventSimulator", config, getClass().getClassLoader());
  final ActorRef eventCollector = system.actorOf(Props.create(eventCollectorClass), "eventCollector");
  ```
- * So the overall flow, with the number of objects in parantheses is: `SensorEventsGenerator (1) -> SimulationMaster
-  (1) -> Truck (25) -> MobileEyeEvent (25 * numberOfEventsToBeEmitted) -> SensorEventCollector (1)`
+ * So the overall flow, with the number of objects in parantheses is: 
+ `SensorEventsGenerator (1) -> 
+                  SimulationMaster (1) -> 
+                                  Truck (25) -> 
+                                       MobileEyeEvent (25 * numberOfEventsToBeEmitted) -> 
+                                                                              SensorEventCollector (1)`
 
 ### Lab Tasks
 You need to do two things in order to finish the labs in this part:
