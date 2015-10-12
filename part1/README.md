@@ -176,24 +176,74 @@ you under the `common-sources` folder. Let's study those classes to understand h
  @Override
  public void onReceive(Object message) throws Exception {
   ...
-    ActorRef **actor** = this.context().system().actorFor("**akka://EventSimulator/user/eventCollector**");
+    ActorRef actor = this.context().system().actorFor("akka://EventSimulator/user/eventCollector");
     while (messageCount < numberOfEventsToGenerate) {
       double offset_factor = rand.nextDouble() * 0.25;
       timeline += messageDelay - (offset_factor * messageDelay);
       messageCount++;
       context().system().scheduler().scheduleOnce(scala.concurrent.duration.Duration.create(timeline, TimeUnit.MILLISECONDS),
-                 **actor**, **generateEvent()**, this.context().system().dispatcher(), this.getSender());
+                 actor, generateEvent(), this.context().system().dispatcher(), this.getSender());
   ...  
   ...
  }
  
  public MobileEyeEvent generateEvent() {
     ...
-       return new **MobileEyeEvent(demoId, nextLocation, getRandomUnsafeEvent(),
-           this)**;
+       return new MobileEyeEvent(demoId, nextLocation, getRandomUnsafeEvent(),
+           this);
     ...  
    }
  ```
+ * The `Truck` actors are started in a round robin manner by a message from the `com.hortonworks.simulator.masters
+ .SimulationMaster` Actor:
+ ```java
+ public SimulationMaster(int numberOfEventEmitters, Class eventEmitterClass,
+ 			ActorRef listener, int numberOfEvents, long demoId, int messageDelay) {
+ 		logger.info("Starting simulation with " + numberOfEventEmitters
+ 				+ " of " + eventEmitterClass + " Event Emitters -- "
+ 				+ eventEmitterClass.toString());
+ 		this.listener = listener;
+ 		this.numberOfEventEmitters = numberOfEventEmitters;
+ 		this.eventEmitterClass = eventEmitterClass;
+ 		eventEmitterRouter = this.getContext().actorOf(
+ 				Props.create(eventEmitterClass, numberOfEvents, demoId, messageDelay).withRouter(
+ 						new RoundRobinRouter(numberOfEventEmitters)),
+ 				"eventEmitterRouter");
+ 	}
+ 
+ 	@Override
+ 	public void onReceive(Object message) throws Exception {
+ 		if (message instanceof StartSimulation) {
+ 			logger.info("Starting Simulation");
+ 			while (eventCount < numberOfEventEmitters) {
+ 				eventEmitterRouter.tell(new EmitEvent(), getSelf());
+ 				eventCount++;
+ 			}
+ 		} else if (message instanceof StopSimulation) {
+ 			listener.tell(new SimulationResultsSummary(eventCount), getSelf());
+ 		} else {
+ 			logger.debug("Received message I'm not sure what to do with: "
+ 					+ message);
+ 		}
+ 	}
+ 	```
+ * The `SimulationMaster` is started by the `com.hortonworks.labutils.SensorEventsGenerator` class by sending it a 
+ `StartSimulation` message:
+ ```java
+ final Props props = Props.create(SimulationMaster.class, numberOfEmitters, eventEmitterClass, listener, 
+                                  params.getNumberOfEvents(), demoId, params.getDelayBetweenEvents());
+ final ActorRef master = system.actorOf(props);
+ master.tell(new StartSimulation(), master);
+ ```
+ * Since the events will be received by the Actor sitting at 
+ `akka://EventSimulator/user/eventCollector`, the `SensorEventsGenerator` also creates that Actor and places it at 
+ the correct hierarchy so that the `Truck` actor's events are routed to it properly:
+ ```java
+ ActorSystem system = ActorSystem.create("EventSimulator", config, getClass().getClassLoader());
+ final ActorRef eventCollector = system.actorOf(Props.create(eventCollectorClass), "eventCollector");
+ ```
+ * So the overall flow, with the number of objects in parantheses is: `SensorEventsGenerator (1) -> SimulationMaster
+  (1) -> Truck (25) -> MobileEyeEvent (25 * numberOfEventsToBeEmitted) -> SensorEventCollector (1)`
 
 ### Lab Tasks
 You need to do two things in order to finish the labs in this part:
